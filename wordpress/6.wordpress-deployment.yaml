@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wordpress
-  namespace: test-wordpress
+  name: wordpress # 생성될 디플로이먼트 이름
+  namespace: test-wordpress # 생성한 네임스페이스 입력 / service, pvc, deployment 모두 같은 네임스페이스에 생성
   labels:
     app: wordpress
 spec:
@@ -19,7 +19,7 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: 192.168.178.96:5000/wp:5.1.7
+      - image: wordpress:5.1.7 # 컨테이너 이미지 주소 입력 ( 생성한 레지스트리주소:5000/이미지명:태그 )
         name: wordpress
         env:
         - name: WORDPRESS_DB_HOST
@@ -27,8 +27,9 @@ spec:
         - name: WORDPRESS_DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mysql-pass
-              key: password
+              name: mysql-pass # 생선한 시크릿의 이름 입력 / 해당 시크릿도 동일한 네임스페이스에 있어야함
+              key: password # 입력한 시크릿에 선언해둔 키:값 중 사용할 값의 키 입력
+              # 해당 값이 DB패스워드
         ports:
         - containerPort: 80
           name: wordpress
@@ -38,4 +39,4 @@ spec:
       volumes:
       - name: wordpress-persistent-storage
         persistentVolumeClaim:
-          claimName: wp-pv-claim
+          claimName: wp-pv-claim # 앞에서 생성한 pvc의 이름 입력
